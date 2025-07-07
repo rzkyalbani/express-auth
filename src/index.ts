@@ -1,37 +1,25 @@
-import cookieParser from 'cookie-parser';
-import express from 'express';
-import mongoose from 'mongoose';
+import cookieParser from "cookie-parser";
+import express from "express";
 
-import mainRouter from './routes/index';
+import mainRouter from "./routes/index";
+import { connectDB } from "./config/db";
+import { config } from "./config/config";
+import { errorHandler } from "./middlewares/errorHandler";
 
 const app = express();
 
-// Middleware 
+// Middleware
 app.use(express.json());
 app.use(cookieParser()); // To parse cookies from request easily
 
 // Router
-app.use('/api/v1', mainRouter);
+app.use("/api/v1", mainRouter);
 
 // Error Handler
-app.use((err: any, req: any, res: any, next: any) => {
-    res.status(err.statusCode || 500).json({
-        message: err.message || 'Something went wrong'
-    });
+app.use(errorHandler);
+
+connectDB().then(() => {
+  app.listen(config.port, () => {
+    console.log(`Server running at http://localhost:${config.port}`);
+  });
 });
-
-const PORT = 3000;
-const MONGO_URI = 'mongodb://localhost:27017/express-auth';
-
-mongoose
-    .connect(MONGO_URI)
-    .then(() => {
-        console.log('Connected to MongoDB');
-        app.listen(PORT, () => {
-            console.log(`Server running on http://localhost:${PORT}`);
-        });
-    })
-    .catch(err => {
-        console.log('MongoDB connection error: ', err);
-    });
-

@@ -1,14 +1,30 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { AuthService } from "../services/authService";
-import { RegisterUserRequest } from "../types/authType";
+import { LoginUserRequest, RegisterUserRequest } from "../types/authType";
 
-export const registerHandler = async (req: Request, res: Response) => {
-    const body = req.body as RegisterUserRequest;
+export const registerHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  const body = req.body as RegisterUserRequest;
 
-    try {
-        const user = await AuthService.register(body);
-        res.status(201).json(user);
-    } catch (err: any) {
-        res.status(err.statusCode || 500).json({ message: err.message });
-    }
-}
+  try {
+    const user = await AuthService.register(body);
+    res.status(201).json(user);
+  } catch (err: any) {
+    next(err);
+  }
+};
+
+export const loginHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  const body = req.body as LoginUserRequest;
+
+  try {
+    const {};
+  } catch (err) {}
+};
